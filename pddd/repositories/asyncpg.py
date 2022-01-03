@@ -17,16 +17,21 @@ from pddd.entities import (
 )
 from pddd.repositories import (
     Repository,
+    CreateRepository,
+    ReadRepository,
+    UpdateRepository,
+    DeleteRepository,
+    CrudRepository,
     NotFound,
 )
 
 
-class AsyncpgBaseRepository(Repository):
+class AsyncpgRepository(Repository):
     conn: Connection
     entity: Type[Entity]
 
 
-class AsyncpgCreateMixin(object):
+class AsyncpgCreateMixin(CreateRepository):
     conn: Connection
     entity: Type[Entity]
     insert_query: str
@@ -46,7 +51,7 @@ class AsyncpgCreateMixin(object):
         )
 
 
-class AsyncpgReadMixin(object):
+class AsyncpgReadMixin(ReadRepository):
     conn: Connection
     entity: Type[Entity]
     select_query: str
@@ -99,7 +104,7 @@ class AsyncpgReadMixin(object):
         )
 
 
-class AsyncpgUpdateMixin(object):
+class AsyncpgUpdateMixin(UpdateRepository):
     conn: Connection
     entity: Type[Entity]
     update_query: str
@@ -122,7 +127,7 @@ class AsyncpgUpdateMixin(object):
         return self.entity(**dict(record))
 
 
-class AsyncpgDeleteMixin(object):
+class AsyncpgDeleteMixin(DeleteRepository):
     conn: Connection
     entity: Type[Entity]
     delete_query: str
@@ -143,8 +148,9 @@ class AsyncpgDeleteMixin(object):
             raise NotFound("no record found to delete")
 
 
-class AsyncpgRepository(
-    AsyncpgBaseRepository,
+class AsyncpgCrudRepository(
+    CrudRepository,
+    AsyncpgRepository,
     AsyncpgCreateMixin,
     AsyncpgReadMixin,
     AsyncpgUpdateMixin,
