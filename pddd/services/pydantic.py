@@ -20,6 +20,11 @@ from pddd.repositories import (
 )
 from pddd.services import (
     Service,
+    CreateService,
+    ReadService,
+    UpdateService,
+    DeleteService,
+    CrudService,
 )
 
 
@@ -27,7 +32,7 @@ class PydanticBaseService(Service):
     repository: Repository
 
 
-class PydanticCreateMixin(object):
+class PydanticCreateMixin(CreateService):
     repository: CreateRepository
     model_create: Type[PydanticModel]
 
@@ -38,7 +43,7 @@ class PydanticCreateMixin(object):
         return dict(await self.repository.create(entity))
 
 
-class PydanticReadMixin(object):
+class PydanticReadMixin(ReadService):
     repository: ReadRepository
     model_read: Type[PydanticModel]
 
@@ -54,7 +59,7 @@ class PydanticReadMixin(object):
         )
 
 
-class PydanticUpdateMixin(object):
+class PydanticUpdateMixin(UpdateService):
     repository: UpdateRepository
     model_update: Type[PydanticModel]
 
@@ -65,11 +70,11 @@ class PydanticUpdateMixin(object):
         return dict(await self.repository.update(entity))
 
 
-class PydanticDeleteMixin(object):
+class PydanticDeleteMixin(DeleteService):
     repository: DeleteRepository
     model_delete: Type[PydanticModel]
 
-    async def remove(self, id_: str) -> None:
+    async def delete(self, id_: str) -> None:
         model: PydanticModel = self.model_delete(id=id_)
         entity: Entity = self.repository.entity(**model.dict())
 
@@ -77,6 +82,7 @@ class PydanticDeleteMixin(object):
 
 
 class PydanticService(
+    CrudService,
     PydanticBaseService,
     PydanticCreateMixin,
     PydanticReadMixin,
