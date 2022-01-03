@@ -28,7 +28,7 @@ from pddd.services import (
 )
 
 
-class PydanticBaseService(Service):
+class PydanticService(Service):
     repository: Repository
 
 
@@ -81,9 +81,9 @@ class PydanticDeleteMixin(DeleteService):
         await self.repository.delete(entity)
 
 
-class PydanticService(
+class PydanticCrudService(
     CrudService,
-    PydanticBaseService,
+    PydanticService,
     PydanticCreateMixin,
     PydanticReadMixin,
     PydanticUpdateMixin,
