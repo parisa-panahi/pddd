@@ -50,7 +50,6 @@ class DeleteRepository(Repository, ABC):
 
 
 class CrudRepository(
-    Repository,
     CreateRepository,
     ReadRepository,
     UpdateRepository,

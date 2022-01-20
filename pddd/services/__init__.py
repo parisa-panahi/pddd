@@ -64,7 +64,6 @@ class DeleteService(Service, ABC):
 
 
 class CrudService(
-    Service,
     CreateService,
     ReadService,
     UpdateService,

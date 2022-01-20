@@ -132,7 +132,6 @@ class PydanticDeleteMixin(DeleteService, ABC):
 
 
 class PydanticCrudService(
-    CrudService,
     PydanticService,
     PydanticCreateMixin,
     PydanticReadMixin,
