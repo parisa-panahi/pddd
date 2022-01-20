@@ -1,0 +1,2 @@
+class RepositoryConnectionError(Exception):
+    pass

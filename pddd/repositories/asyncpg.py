@@ -5,11 +5,13 @@ from abc import (
 from typing import (
     List,
     Tuple,
+    Optional,
 )
 
 from asyncpg import (
     Record,
-    Connection as AsyncpgConnection,
+    connect,
+    Connection,
 )
 from buildpg import (
     render,
@@ -17,6 +19,9 @@ from buildpg import (
 
 from pddd.entities import (
     Entity,
+)
+from pddd.exceptions import (
+    RepositoryConnectionError,
 )
 from pddd.repositories import (
     Repository,
@@ -28,6 +33,28 @@ from pddd.repositories import (
 )
 
 
+class AsyncpgConnection(object):
+    conn: Optional[Connection]
+    dsn: str
+
+    def __init__(self, dsn: str):
+        self.conn = None
+        self.dsn = dsn
+
+    async def connect(self) -> None:
+        if self.conn:
+            raise RepositoryConnectionError("asyncpg is running")
+
+        self.conn = await connect(dsn=self.dsn)
+
+    async def disconnect(self) -> None:
+        if not self.conn:
+            raise RepositoryConnectionError("asyncpg is not running")
+
+        await self.conn.close()
+        self.conn = None
+
+
 class AsyncpgRepository(Repository, ABC):
     @property
     @abstractmethod
@@ -35,7 +62,7 @@ class AsyncpgRepository(Repository, ABC):
         raise NotImplementedError()
 
 
-class AsyncpgCreateMixin(CreateRepository, ABC):
+class AsyncpgCreateRepository(AsyncpgRepository, CreateRepository, ABC):
     @property
     @abstractmethod
     def insert_query(self) -> str:
@@ -48,7 +75,7 @@ class AsyncpgCreateMixin(CreateRepository, ABC):
             **ctx,
         )
 
-        record: Record = await self.connection.fetchrow(
+        record: Record = await self.connection.conn.fetchrow(
             query=query,
             *args,
         )
@@ -59,7 +86,7 @@ class AsyncpgCreateMixin(CreateRepository, ABC):
         )
 
 
-class AsyncpgReadMixin(ReadRepository, ABC):
+class AsyncpgReadRepository(AsyncpgRepository, ReadRepository, ABC):
     _op_map: dict = {
         "lt": "<",
         "lte": "<=",
@@ -106,7 +133,7 @@ class AsyncpgReadMixin(ReadRepository, ABC):
         return list(
             map(
                 self.entity,
-                await self.connection.fetch(
+                await self.connection.conn.fetch(
                     query=query,
                     *args,
                 ),
@@ -114,7 +141,7 @@ class AsyncpgReadMixin(ReadRepository, ABC):
         )
 
 
-class AsyncpgUpdateMixin(UpdateRepository, ABC):
+class AsyncpgUpdateRepository(AsyncpgRepository, UpdateRepository, ABC):
     @property
     @abstractmethod
     def update_query(self) -> str:
@@ -127,7 +154,7 @@ class AsyncpgUpdateMixin(UpdateRepository, ABC):
             **ctx,
         )
 
-        record: Record = await self.connection.fetchrow(
+        record: Record = await self.connection.conn.fetchrow(
             query=query,
             *args,
         )
@@ -141,7 +168,7 @@ class AsyncpgUpdateMixin(UpdateRepository, ABC):
         )
 
 
-class AsyncpgDeleteMixin(DeleteRepository, ABC):
+class AsyncpgDeleteRepository(AsyncpgRepository, DeleteRepository, ABC):
     @property
     @abstractmethod
     def delete_query(self) -> str:
@@ -154,7 +181,7 @@ class AsyncpgDeleteMixin(DeleteRepository, ABC):
             **ctx,
         )
 
-        record: Record = await self.connection.fetchrow(
+        record: Record = await self.connection.conn.fetchrow(
             query=query,
             *args,
         )
@@ -164,11 +191,10 @@ class AsyncpgDeleteMixin(DeleteRepository, ABC):
 
 
 class AsyncpgCrudRepository(
-    AsyncpgRepository,
-    AsyncpgCreateMixin,
-    AsyncpgReadMixin,
-    AsyncpgUpdateMixin,
-    AsyncpgDeleteMixin,
+    AsyncpgCreateRepository,
+    AsyncpgReadRepository,
+    AsyncpgUpdateRepository,
+    AsyncpgDeleteRepository,
     ABC,
 ):
     ...
