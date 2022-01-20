@@ -23,7 +23,6 @@ from pddd.repositories import (
     ReadRepository,
     UpdateRepository,
     DeleteRepository,
-    CrudRepository,
     NotFound,
 )
 
@@ -161,7 +160,6 @@ class AsyncpgDeleteMixin(DeleteRepository, ABC):
 
 
 class AsyncpgCrudRepository(
-    CrudRepository,
     AsyncpgRepository,
     AsyncpgCreateMixin,
     AsyncpgReadMixin,
