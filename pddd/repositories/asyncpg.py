@@ -9,6 +9,7 @@ from typing import (
 
 from asyncpg import (
     Record,
+    Connection as AsyncpgConnection,
 )
 from buildpg import (
     render,
@@ -28,7 +29,10 @@ from pddd.repositories import (
 
 
 class AsyncpgRepository(Repository, ABC):
-    ...
+    @property
+    @abstractmethod
+    def connection(self) -> AsyncpgConnection:
+        raise NotImplementedError()
 
 
 class AsyncpgCreateMixin(CreateRepository, ABC):
@@ -44,7 +48,7 @@ class AsyncpgCreateMixin(CreateRepository, ABC):
             **ctx,
         )
 
-        record: Record = await self.conn.fetchrow(
+        record: Record = await self.connection.fetchrow(
             query=query,
             *args,
         )
@@ -102,7 +106,7 @@ class AsyncpgReadMixin(ReadRepository, ABC):
         return list(
             map(
                 self.entity,
-                await self.conn.fetch(
+                await self.connection.fetch(
                     query=query,
                     *args,
                 ),
@@ -123,7 +127,7 @@ class AsyncpgUpdateMixin(UpdateRepository, ABC):
             **ctx,
         )
 
-        record: Record = await self.conn.fetchrow(
+        record: Record = await self.connection.fetchrow(
             query=query,
             *args,
         )
@@ -150,7 +154,7 @@ class AsyncpgDeleteMixin(DeleteRepository, ABC):
             **ctx,
         )
 
-        record: Record = await self.conn.fetchrow(
+        record: Record = await self.connection.fetchrow(
             query=query,
             *args,
         )

@@ -16,7 +16,7 @@ from pddd.entities import (
 class Repository(ABC):
     @property
     @abstractmethod
-    def conn(self) -> Any:
+    def connection(self) -> Any:
         raise NotImplementedError()
 
     @property
