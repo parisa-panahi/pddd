@@ -8,4 +8,4 @@ from dataclasses import (
 
 @dataclass(frozen=True)
 class Entity(ABC):
-    pass
+    ...

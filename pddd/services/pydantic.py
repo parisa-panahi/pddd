@@ -1,3 +1,7 @@
+from abc import (
+    abstractmethod,
+    ABC,
+)
 from typing import (
     Type,
     List,
@@ -28,16 +32,26 @@ from pddd.services import (
 )
 
 
-class PydanticService(Service):
-    repository: Repository
+class PydanticService(Service, ABC):
+    @property
+    @abstractmethod
+    def repository(self) -> Repository:
+        raise NotImplementedError()
 
 
-class PydanticCreateMixin(CreateService):
-    repository: CreateRepository
-    model_create: Type[PydanticModel]
+class PydanticCreateMixin(CreateService, ABC):
+    @property
+    @abstractmethod
+    def repository(self) -> CreateRepository:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def validate_create(self) -> Type[PydanticModel]:
+        raise NotImplementedError()
 
     async def create(self, inputs: dict) -> dict:
-        model: PydanticModel = self.model_create(**inputs)
+        model: PydanticModel = self.validate_create(**inputs)
 
         kwargs: dict = model.dict()
         entity: Entity = self.repository.entity(
@@ -48,12 +62,19 @@ class PydanticCreateMixin(CreateService):
         return new_entity.__dict__
 
 
-class PydanticReadMixin(ReadService):
-    repository: ReadRepository
-    model_read: Type[PydanticModel]
+class PydanticReadMixin(ReadService, ABC):
+    @property
+    @abstractmethod
+    def repository(self) -> ReadRepository:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def validate_read(self) -> Type[PydanticModel]:
+        raise NotImplementedError()
 
     async def read(self, filters: dict) -> List[dict]:
-        model: PydanticModel = self.model_read(**filters)
+        model: PydanticModel = self.validate_read(**filters)
 
         entities: list = await self.repository.read(filters=model.dict())
 
@@ -65,12 +86,19 @@ class PydanticReadMixin(ReadService):
         )
 
 
-class PydanticUpdateMixin(UpdateService):
-    repository: UpdateRepository
-    model_update: Type[PydanticModel]
+class PydanticUpdateMixin(UpdateService, ABC):
+    @property
+    @abstractmethod
+    def repository(self) -> UpdateRepository:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def validate_update(self) -> Type[PydanticModel]:
+        raise NotImplementedError()
 
     async def update(self, id_: str, inputs: dict) -> dict:
-        model: PydanticModel = self.model_update(id=id_, **inputs)
+        model: PydanticModel = self.validate_update(id=id_, **inputs)
 
         kwargs: dict = model.dict()
         entity: Entity = self.repository.entity(
@@ -81,12 +109,19 @@ class PydanticUpdateMixin(UpdateService):
         return new_entity.__dict__
 
 
-class PydanticDeleteMixin(DeleteService):
-    repository: DeleteRepository
-    model_delete: Type[PydanticModel]
+class PydanticDeleteMixin(DeleteService, ABC):
+    @property
+    @abstractmethod
+    def repository(self) -> DeleteRepository:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def validate_delete(self) -> Type[PydanticModel]:
+        raise NotImplementedError()
 
     async def delete(self, id_: str) -> None:
-        model: PydanticModel = self.model_delete(id=id_)
+        model: PydanticModel = self.validate_delete(id=id_)
 
         kwargs: dict = model.dict()
         entity: Entity = self.repository.entity(
@@ -103,5 +138,9 @@ class PydanticCrudService(
     PydanticReadMixin,
     PydanticUpdateMixin,
     PydanticDeleteMixin,
+    ABC,
 ):
-    repository: CrudRepository
+    @property
+    @abstractmethod
+    def repository(self) -> CrudRepository:
+        raise NotImplementedError()

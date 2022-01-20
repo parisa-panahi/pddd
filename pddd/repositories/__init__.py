@@ -14,51 +14,39 @@ from pddd.entities import (
 
 
 class Repository(ABC):
-    conn: Any
-    entity: Type[Entity]
+    @property
+    @abstractmethod
+    def conn(self) -> Any:
+        raise NotImplementedError()
 
-    def __init__(self, conn: Any = None, entity: Type[Entity] = None):
-        if not hasattr(self, "conn"):
-            self.conn = conn
-
-        if not hasattr(self, "entity"):
-            self.entity = entity
+    @property
+    @abstractmethod
+    def entity(self) -> Type[Entity]:
+        raise NotImplementedError()
 
 
-class CreateRepository(Repository, ABC):
-    conn: Any
-    entity: Type[Entity]
-
+class CreateRepository(Repository):
     @abstractmethod
     async def create(self, entity: Entity) -> Entity:
-        ...
+        raise NotImplementedError()
 
 
 class ReadRepository(Repository, ABC):
-    conn: Any
-    entity: Type[Entity]
-
     @abstractmethod
     async def read(self, filters: dict) -> List[Entity]:
-        ...
+        raise NotImplementedError()
 
 
 class UpdateRepository(Repository, ABC):
-    conn: Any
-    entity: Type[Entity]
-
     @abstractmethod
     async def update(self, entity: Entity) -> Entity:
-        ...
+        raise NotImplementedError()
 
 
 class DeleteRepository(Repository, ABC):
-    conn: Any
-    entity: Type[Entity]
-
     @abstractmethod
     async def delete(self, entity: Entity) -> None:
-        ...
+        raise NotImplementedError()
 
 
 class CrudRepository(
@@ -69,8 +57,8 @@ class CrudRepository(
     DeleteRepository,
     ABC,
 ):
-    pass
+    ...
 
 
 class NotFound(Exception):
-    pass
+    ...

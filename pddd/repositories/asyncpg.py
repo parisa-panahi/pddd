@@ -1,11 +1,13 @@
+from abc import (
+    ABC,
+    abstractmethod,
+)
 from typing import (
     List,
     Tuple,
-    Type,
 )
 
 from asyncpg import (
-    Connection,
     Record,
 )
 from buildpg import (
@@ -26,15 +28,15 @@ from pddd.repositories import (
 )
 
 
-class AsyncpgRepository(Repository):
-    conn: Connection
-    entity: Type[Entity]
+class AsyncpgRepository(Repository, ABC):
+    ...
 
 
-class AsyncpgCreateMixin(CreateRepository):
-    conn: Connection
-    entity: Type[Entity]
-    insert_query: str
+class AsyncpgCreateMixin(CreateRepository, ABC):
+    @property
+    @abstractmethod
+    def insert_query(self) -> str:
+        raise NotImplementedError()
 
     async def create(self, entity: Entity) -> Entity:
         ctx: dict = entity.__dict__
@@ -54,16 +56,18 @@ class AsyncpgCreateMixin(CreateRepository):
         )
 
 
-class AsyncpgReadMixin(ReadRepository):
-    conn: Connection
-    entity: Type[Entity]
-    select_query: str
+class AsyncpgReadMixin(ReadRepository, ABC):
     _op_map: dict = {
         "lt": "<",
         "lte": "<=",
         "gt": "<",
         "gte": "<=",
     }
+
+    @property
+    @abstractmethod
+    def select_query(self) -> str:
+        raise NotImplementedError()
 
     async def _filters_to_sql(self, filters: dict) -> Tuple[str, dict]:
         query: str = ""
@@ -107,10 +111,11 @@ class AsyncpgReadMixin(ReadRepository):
         )
 
 
-class AsyncpgUpdateMixin(UpdateRepository):
-    conn: Connection
-    entity: Type[Entity]
-    update_query: str
+class AsyncpgUpdateMixin(UpdateRepository, ABC):
+    @property
+    @abstractmethod
+    def update_query(self) -> str:
+        raise NotImplementedError()
 
     async def update(self, entity: Entity) -> Entity:
         ctx: dict = entity.__dict__
@@ -133,10 +138,11 @@ class AsyncpgUpdateMixin(UpdateRepository):
         )
 
 
-class AsyncpgDeleteMixin(DeleteRepository):
-    conn: Connection
-    entity: Type[Entity]
-    delete_query: str
+class AsyncpgDeleteMixin(DeleteRepository, ABC):
+    @property
+    @abstractmethod
+    def delete_query(self) -> str:
+        raise NotImplementedError()
 
     async def delete(self, entity: Entity) -> None:
         ctx: dict = entity.__dict__
@@ -161,5 +167,6 @@ class AsyncpgCrudRepository(
     AsyncpgReadMixin,
     AsyncpgUpdateMixin,
     AsyncpgDeleteMixin,
+    ABC,
 ):
-    pass
+    ...
