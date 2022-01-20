@@ -38,9 +38,14 @@ class PydanticCreateMixin(CreateService):
 
     async def create(self, inputs: dict) -> dict:
         model: PydanticModel = self.model_create(**inputs)
-        entity: Entity = self.repository.entity(**model.dict())
 
-        return dict(await self.repository.create(entity))
+        kwargs: dict = model.dict()
+        entity: Entity = self.repository.entity(
+            **kwargs,  # noqa
+        )
+
+        new_entity = await self.repository.create(entity)
+        return new_entity.__dict__
 
 
 class PydanticReadMixin(ReadService):
@@ -49,7 +54,8 @@ class PydanticReadMixin(ReadService):
 
     async def read(self, filters: dict) -> List[dict]:
         model: PydanticModel = self.model_read(**filters)
-        entities: list = await self.repository.read(**model.dict())
+
+        entities: list = await self.repository.read(filters=model.dict())
 
         return list(
             map(
@@ -65,9 +71,14 @@ class PydanticUpdateMixin(UpdateService):
 
     async def update(self, id_: str, inputs: dict) -> dict:
         model: PydanticModel = self.model_update(id=id_, **inputs)
-        entity: Entity = self.repository.entity(**model.dict())
 
-        return dict(await self.repository.update(entity))
+        kwargs: dict = model.dict()
+        entity: Entity = self.repository.entity(
+            **kwargs,  # noqa
+        )
+
+        new_entity = await self.repository.update(entity)
+        return new_entity.__dict__
 
 
 class PydanticDeleteMixin(DeleteService):
@@ -76,7 +87,11 @@ class PydanticDeleteMixin(DeleteService):
 
     async def delete(self, id_: str) -> None:
         model: PydanticModel = self.model_delete(id=id_)
-        entity: Entity = self.repository.entity(**model.dict())
+
+        kwargs: dict = model.dict()
+        entity: Entity = self.repository.entity(
+            **kwargs,  # noqa
+        )
 
         await self.repository.delete(entity)
 
