@@ -70,4 +70,7 @@ class CrudService(
     DeleteService,
     ABC,
 ):
-    repository: CrudRepository
+    @property
+    @abstractmethod
+    def repository(self) -> CrudRepository:
+        raise NotImplementedError()
