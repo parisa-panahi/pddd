@@ -76,7 +76,7 @@ class AsyncpgCreateRepository(AsyncpgRepository, CreateRepository, ABC):
         )
 
         record: Record = await self.connection.conn.fetchrow(
-            query=query,
+            query,
             *args,
         )
 
@@ -134,7 +134,7 @@ class AsyncpgReadRepository(AsyncpgRepository, ReadRepository, ABC):
             map(
                 self.entity,
                 await self.connection.conn.fetch(
-                    query=query,
+                    query,
                     *args,
                 ),
             )
@@ -155,7 +155,7 @@ class AsyncpgUpdateRepository(AsyncpgRepository, UpdateRepository, ABC):
         )
 
         record: Record = await self.connection.conn.fetchrow(
-            query=query,
+            query,
             *args,
         )
 
@@ -182,7 +182,7 @@ class AsyncpgDeleteRepository(AsyncpgRepository, DeleteRepository, ABC):
         )
 
         record: Record = await self.connection.conn.fetchrow(
-            query=query,
+            query,
             *args,
         )
 
