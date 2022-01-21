@@ -2,5 +2,5 @@ class RepositoryConnectionError(Exception):
     pass
 
 
-class NotFound(Exception):
+class DataNotFoundError(Exception):
     ...
