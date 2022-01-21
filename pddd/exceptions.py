@@ -2,7 +2,7 @@ class RepositoryConnectionError(Exception):
     pass
 
 
-class DataNotFoundError(Exception):
+class RecordNotFoundError(Exception):
     pass
 
 

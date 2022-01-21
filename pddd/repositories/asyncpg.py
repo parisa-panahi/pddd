@@ -22,7 +22,7 @@ from pddd.entities import (
 )
 from pddd.exceptions import (
     RepositoryConnectionError,
-    DataNotFoundError,
+    RecordNotFoundError,
     InvalidFilterError,
 )
 from pddd.repositories import (
@@ -164,7 +164,7 @@ class AsyncpgUpdateRepository(AsyncpgRepository, UpdateRepository, ABC):
         )
 
         if not record:
-            raise DataNotFoundError("no record found to update")
+            raise RecordNotFoundError("no record found to update")
 
         kwargs = dict(record)
         return self.entity(
@@ -191,7 +191,7 @@ class AsyncpgDeleteRepository(AsyncpgRepository, DeleteRepository, ABC):
         )
 
         if not record:
-            raise DataNotFoundError("no record found to delete")
+            raise RecordNotFoundError("no record found to delete")
 
 
 class AsyncpgCrudRepository(
