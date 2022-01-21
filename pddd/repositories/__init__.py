@@ -57,7 +57,3 @@ class CrudRepository(
     ABC,
 ):
     ...
-
-
-class NotFound(Exception):
-    ...

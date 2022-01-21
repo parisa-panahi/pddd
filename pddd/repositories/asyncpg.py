@@ -22,6 +22,7 @@ from pddd.entities import (
 )
 from pddd.exceptions import (
     RepositoryConnectionError,
+    NotFound,
 )
 from pddd.repositories import (
     Repository,
@@ -29,7 +30,6 @@ from pddd.repositories import (
     ReadRepository,
     UpdateRepository,
     DeleteRepository,
-    NotFound,
 )
 
 
