@@ -18,14 +18,22 @@ from pddd.services import (
 )
 
 try:
-    from starlette_marshal import json
+    from starlette_marshal.json import (
+        loads as json_loads,
+    )
 except ImportError:
-    import json
+    from json import (
+        loads as json_loads,
+    )
 
 try:
-    from starlette_marshal import JSONResponse
+    from starlette_marshal import (
+        JSONResponse,
+    )
 except ImportError:
-    from starlette.responses import JSONResponse
+    from starlette.responses import (
+        JSONResponse,
+    )
 
 
 class StarletteEndpoint(HTTPEndpoint):
@@ -36,7 +44,7 @@ class StarletteCreateMixin(object):
     service: CreateService
 
     async def post(self, request: Request) -> Response:
-        body: dict = json.loads(s=await request.body())
+        body: dict = json_loads(s=await request.body())
         data: dict = await self.service.create(inputs=body)
 
         return JSONResponse(content=data)
@@ -56,7 +64,7 @@ class StarletteUpdateMixin(object):
     service: UpdateService
 
     async def patch(self, request: Request) -> Response:
-        body: dict = json.loads(s=await request.body())
+        body: dict = json_loads(s=await request.body())
         id_: str = request.path_params.get("id")
         data: dict = await self.service.update(id_=id_, inputs=body)
 
