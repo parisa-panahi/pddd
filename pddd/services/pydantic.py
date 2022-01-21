@@ -28,7 +28,6 @@ from pddd.services import (
     ReadService,
     UpdateService,
     DeleteService,
-    CrudService,
 )
 
 
@@ -78,12 +77,10 @@ class PydanticReadMixin(ReadService, ABC):
 
         entities: list = await self.repository.read(filters=model.dict())
 
-        return list(
-            map(
-                dict,
-                entities,
-            )
-        )
+        return [
+            entity.__dict__
+            for entity in entities
+        ]
 
 
 class PydanticUpdateMixin(UpdateService, ABC):

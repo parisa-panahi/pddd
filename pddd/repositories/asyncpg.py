@@ -130,15 +130,18 @@ class AsyncpgReadRepository(AsyncpgRepository, ReadRepository, ABC):
             **kwargs,
         )
 
-        return list(
-            map(
-                self.entity,
-                await self.connection.conn.fetch(
-                    query,
-                    *args,
-                ),
-            )
+        records: list = await self.connection.conn.fetch(
+            query,
+            *args,
         )
+
+        entities: List[Entity] = []
+        for record in records:
+            entities.append(self.entity(
+                **record  # noqa
+            ))
+
+        return entities
 
 
 class AsyncpgUpdateRepository(AsyncpgRepository, UpdateRepository, ABC):
