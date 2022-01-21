@@ -3,4 +3,8 @@ class RepositoryConnectionError(Exception):
 
 
 class DataNotFoundError(Exception):
-    ...
+    pass
+
+
+class InvalidFilterError(Exception):
+    pass

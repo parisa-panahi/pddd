@@ -23,6 +23,7 @@ from pddd.entities import (
 from pddd.exceptions import (
     RepositoryConnectionError,
     DataNotFoundError,
+    InvalidFilterError,
 )
 from pddd.repositories import (
     Repository,
@@ -116,7 +117,7 @@ class AsyncpgReadRepository(AsyncpgRepository, ReadRepository, ABC):
                 field = parts[0]
                 op = self._op_map[parts[1]]
             else:
-                raise ValueError("more than one '__' in field name")
+                raise InvalidFilterError("more than one '__' in field name")
 
             query += f" and {field} {op} :{field}"
             values[field] = v
