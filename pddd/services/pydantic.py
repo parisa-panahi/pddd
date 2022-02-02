@@ -46,11 +46,11 @@ class PydanticCreateMixin(CreateService, ABC):
 
     @property
     @abstractmethod
-    def validate_create(self) -> Type[PydanticModel]:
+    def create_model(self) -> Type[PydanticModel]:
         raise NotImplementedError()
 
     async def create(self, inputs: dict) -> dict:
-        model: PydanticModel = self.validate_create(**inputs)
+        model: PydanticModel = self.create_model(**inputs)
 
         kwargs: dict = model.dict()
         entity: Entity = self.repository.entity(
@@ -69,11 +69,11 @@ class PydanticReadMixin(ReadService, ABC):
 
     @property
     @abstractmethod
-    def validate_read(self) -> Type[PydanticModel]:
+    def read_model(self) -> Type[PydanticModel]:
         raise NotImplementedError()
 
     async def read(self, filters: dict) -> List[dict]:
-        model: PydanticModel = self.validate_read(**filters)
+        model: PydanticModel = self.read_model(**filters)
 
         entities: list = await self.repository.read(filters=model.dict())
 
@@ -91,11 +91,11 @@ class PydanticUpdateMixin(UpdateService, ABC):
 
     @property
     @abstractmethod
-    def validate_update(self) -> Type[PydanticModel]:
+    def update_model(self) -> Type[PydanticModel]:
         raise NotImplementedError()
 
     async def update(self, id_: str, inputs: dict) -> dict:
-        model: PydanticModel = self.validate_update(id=id_, **inputs)
+        model: PydanticModel = self.update_model(id=id_, **inputs)
 
         kwargs: dict = model.dict()
         entity: Entity = self.repository.entity(
@@ -114,11 +114,11 @@ class PydanticDeleteMixin(DeleteService, ABC):
 
     @property
     @abstractmethod
-    def validate_delete(self) -> Type[PydanticModel]:
+    def delete_model(self) -> Type[PydanticModel]:
         raise NotImplementedError()
 
     async def delete(self, id_: str) -> None:
-        model: PydanticModel = self.validate_delete(id=id_)
+        model: PydanticModel = self.delete_model(id=id_)
 
         kwargs: dict = model.dict()
         entity: Entity = self.repository.entity(
