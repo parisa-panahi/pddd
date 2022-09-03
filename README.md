@@ -1,4 +1,4 @@
-# Pythonic Domain Driven Design
+# pythonic domain driven design
 
 This project is inspired by Domain-Driven Design (DDD), Hexagonal  (Ports &
 Adapters) architecture, Onion Architecture, Clean Architecture, and Explicit
